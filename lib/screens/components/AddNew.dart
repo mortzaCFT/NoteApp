@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:notepad/controllers/data_controller.dart';
 
 class AddNew extends StatelessWidget {
   AddNew({super.key, required this.controller});
 
-  final Rx<Color> selectedColor = Rx<Color>(Colors.blue);
+  final Rx<Color> selectedColor = Rx<Color>(Colors.blue);  
   final TextEditingController titleController = TextEditingController();
   final TextEditingController textController = TextEditingController();
 
@@ -24,7 +25,8 @@ class AddNew extends StatelessWidget {
         children: [
           Text(
             'Add New Note',
-            style: TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
           TextField(
@@ -36,26 +38,29 @@ class AddNew extends StatelessWidget {
               hintStyle: TextStyle(color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey), 
+                borderSide: BorderSide(color: Colors.grey),
               ),
-            ),),
+            ),
+          ),
           SizedBox(height: 10),
-           TextField(
+          TextField(
             cursorColor: Colors.grey,
             controller: textController,
             style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'Text', 
-              hintStyle: TextStyle(color: Colors.grey), 
+              hintText: 'Text',
+              hintStyle: TextStyle(color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey), 
+                borderSide: BorderSide(color: Colors.grey),
               ),
             ),
             maxLines: 3,
           ),
           SizedBox(height: 20),
-          Text('Select Color :',style:TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text('Select Color :',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           Wrap(
             spacing: 10,
@@ -65,85 +70,113 @@ class AddNew extends StatelessWidget {
                   selectedColor.value = Colors.blue;
                 },
                 child: Obx(() => Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    border: Border.all(
-                      color: selectedColor.value == Colors.blue ? Colors.white : Colors.black54,
-                      width: 5, 
-                    ),
-                    borderRadius: BorderRadius.circular(25), 
-                  ),
-                )),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent,
+                        border: Border.all(
+                          color: selectedColor.value == Colors.blue
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    )),
               ),
               GestureDetector(
                 onTap: () {
                   selectedColor.value = Colors.red;
                 },
                 child: Obx(() => Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent, 
-                    border: Border.all(
-                      color: selectedColor.value == Colors.red ? Colors.white : Colors.black54,
-                      width: 5,
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                )),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        border: Border.all(
+                          color: selectedColor.value == Colors.red
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    )),
               ),
               GestureDetector(
                 onTap: () {
                   selectedColor.value = Colors.greenAccent;
                 },
                 child: Obx(() => Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.greenAccent,
-                    border: Border.all(
-                      color: selectedColor.value == Colors.greenAccent ? Colors.white : Colors.black54,
-                      width: 5,
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                )),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.greenAccent,
+                        border: Border.all(
+                          color: selectedColor.value == Colors.greenAccent
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    )),
               ),
               GestureDetector(
                 onTap: () {
                   selectedColor.value = Colors.purple.shade500;
                 },
                 child: Obx(() => Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color:Colors.purple.shade500,
-                    border: Border.all(
-                      color: selectedColor.value == Colors.purple.shade500 ? Colors.white : Colors.black54,
-                      width: 5,
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                )),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.purple.shade500,
+                        border: Border.all(
+                          color: selectedColor.value == Colors.purple.shade500
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    )),
               ),
-            GestureDetector(
+              GestureDetector(
                 onTap: () {
                   selectedColor.value = Colors.grey.shade500;
                 },
                 child: Obx(() => Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color:Colors.grey.shade500,
-                    border: Border.all(
-                      color: selectedColor.value == Colors.grey.shade500 ? Colors.white : Colors.black54,
-                      width: 5,
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                )),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade500,
+                        border: Border.all(
+                          color: selectedColor.value == Colors.grey.shade500
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    )),
+              ),
+              GestureDetector(
+                onTap: () {
+                  _showColorPicker(context);
+                },
+                child: Obx(() => Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: selectedColor.value, 
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Icon(Icons.color_lens, color: Colors.black54),
+                    )),
               ),
             ],
           ),
@@ -159,6 +192,35 @@ class AddNew extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showColorPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Pick a color'),
+          content: SingleChildScrollView(
+            child: HueRingPicker(
+              pickerColor: selectedColor.value, 
+              onColorChanged: (Color color) {
+                selectedColor.value = color; 
+              },
+              enableAlpha: false,
+              displayThumbColor: true,
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Select'),
+              onPressed: () {
+                Get.back(); 
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

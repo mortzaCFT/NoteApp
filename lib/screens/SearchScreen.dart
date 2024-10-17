@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notepad/controllers/data_controller.dart';
+import 'package:notepad/controllers/theme_controller.dart';
 import 'package:notepad/screens/components/TextCard.dart'; 
 
 class SearchScreen extends StatelessWidget {
   final DataController controller = Get.find<DataController>();
   final TextEditingController searchController = TextEditingController();
+  final ThemeController themeController = Get.find(); 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(27, 255, 255, 255),
+   return Obx(() {        
+    Color scaffoldColor = themeController.isDarkMode.value
+        ? Colors.white
+        : Color.fromARGB(27, 255, 255, 255); 
+
+      return Scaffold(
+        backgroundColor: scaffoldColor,
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 35, 20, 0),
         child: Column(
@@ -82,5 +89,6 @@ class SearchScreen extends StatelessWidget {
         ),
       ),
     );
-  }
+   
+  });}
 }

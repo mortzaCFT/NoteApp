@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:notepad/data/date.dart';
+import 'package:intl/intl.dart';
+import 'package:notepad/data/data.dart';
 
 class TextCard extends StatelessWidget {
   const TextCard({
@@ -13,6 +14,8 @@ class TextCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(note.dateCreated);
+
     return Container(
       width: MediaQuery.of(context).size.width - 40,
       padding: const EdgeInsets.all(15),
@@ -44,12 +47,22 @@ class TextCard extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      formattedDate, 
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ),
-          IconButton(
-            onPressed: onDelete, 
-            icon: Icon(Icons.delete_outlined, color: Colors.black),
           ),
         ],
       ),
