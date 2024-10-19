@@ -30,7 +30,6 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Theme toggle button
                   Container(
                     width: 40,
                     height: 40,
@@ -45,7 +44,6 @@ class HomeScreen extends StatelessWidget {
                       icon: Icon(Icons.nightlight_round_sharp, color: textColor),
                     ),
                   ),
-                  // Search button
                   Container(
                     width: 40,
                     height: 40,
@@ -64,7 +62,7 @@ class HomeScreen extends StatelessWidget {
               ),
               Expanded(
                 child: Obx(() {
-                  // Sort notes by date created
+                 
                   var sortedNotes = controller.data.toList()
                     ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
 
@@ -74,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                       final note = sortedNotes[index];
 
                       return Dismissible(
-                        key: Key(note.id), // Use ID as key
+                        key: Key(note.id), 
                         direction: DismissDirection.horizontal,
                         background: Container(
                           alignment: Alignment.centerLeft,
@@ -97,17 +95,17 @@ class HomeScreen extends StatelessWidget {
                           return shouldDelete;
                         },
                         onDismissed: (direction) {
-                          controller.del_Note(note.id); // Use ID to delete
+                          controller.del_Note(note.id); 
                         },
                         child: GestureDetector(
                           onTap: () {
-                            // Pass the note ID instead of index
+                           
                             Get.to(EditScreen(noteId: note.id));
                           },
                           child: TextCard(
                             note: note,
                             onDelete: () {
-                              controller.del_Note(note.id); // Use ID to delete
+                              controller.del_Note(note.id); 
                             },
                           ),
                         ),
