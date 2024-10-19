@@ -9,18 +9,18 @@ import 'package:notepad/screens/components/TextCard.dart';
 
 class HomeScreen extends StatelessWidget {
   final DataController controller = Get.put(DataController());
-  final ThemeController themeController = Get.find(); 
+  final ThemeController themeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-
-   return Obx(() {        
-    Color scaffoldColor = themeController.isDarkMode.value
-        ? Colors.white
-        : Color.fromARGB(27, 255, 255, 255); 
+    return Obx(() {
+      Color scaffoldColor = themeController.isDarkMode.value
+          ? Colors.white
+          : Color.fromARGB(27, 255, 255, 255);
+      Color textColor =
+          themeController.isDarkMode.value ? Colors.black : Colors.white;
 
       return Scaffold(
-      
         backgroundColor: scaffoldColor,
         body: Padding(
           padding: const EdgeInsets.fromLTRB(20, 35, 20, 0),
@@ -30,7 +30,8 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-               Container(
+                  // Theme toggle button
+                  Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
@@ -40,11 +41,11 @@ class HomeScreen extends StatelessWidget {
                     child: IconButton(
                       onPressed: () {
                         themeController.toggleTheme();
-                        print("YEAH");
                       },
-                      icon: Icon(Icons.nightlight_round_sharp, color: Colors.white70),
+                      icon: Icon(Icons.nightlight_round_sharp, color: textColor),
                     ),
                   ),
+                  // Search button
                   Container(
                     width: 40,
                     height: 40,
@@ -56,40 +57,37 @@ class HomeScreen extends StatelessWidget {
                       onPressed: () {
                         Get.to(SearchScreen());
                       },
-                      icon: Icon(Icons.search, color: Colors.white70),
+                      icon: Icon(Icons.search, color: textColor),
                     ),
                   ),
                 ],
               ),
               Expanded(
                 child: Obx(() {
-                  var sortedNotes = controller.data
-                      .toList() 
-                      ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated)); 
-      
+                  // Sort notes by date created
+                  var sortedNotes = controller.data.toList()
+                    ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
+
                   return ListView.builder(
                     itemCount: sortedNotes.length,
                     itemBuilder: (context, index) {
-                      final note = sortedNotes[index];  
-      
+                      final note = sortedNotes[index];
+
                       return Dismissible(
-                        key: Key(note.title + index.toString()),
+                        key: Key(note.id), // Use ID as key
                         direction: DismissDirection.horizontal,
                         background: Container(
                           alignment: Alignment.centerLeft,
                           decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(12)
-                          ),
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(12)),
                           padding: EdgeInsets.symmetric(horizontal: 20),
-                      
                           child: Icon(Icons.delete, color: Colors.white),
                         ),
                         secondaryBackground: Container(
-                           decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(12)
-                          ),
+                          decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(12)),
                           alignment: Alignment.centerRight,
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: Icon(Icons.delete, color: Colors.white),
@@ -99,16 +97,17 @@ class HomeScreen extends StatelessWidget {
                           return shouldDelete;
                         },
                         onDismissed: (direction) {
-                          controller.del_Note(index); 
+                          controller.del_Note(note.id); // Use ID to delete
                         },
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(EditScreen(noteIndex: index));
+                            // Pass the note ID instead of index
+                            Get.to(EditScreen(noteId: note.id));
                           },
                           child: TextCard(
                             note: note,
                             onDelete: () {
-                              controller.del_Note(index); 
+                              controller.del_Note(note.id); // Use ID to delete
                             },
                           ),
                         ),
@@ -132,31 +131,26 @@ class HomeScreen extends StatelessWidget {
           child: Icon(Icons.add_sharp, color: Colors.white),
         ),
       );
-    }
-    );
+    });
   }
 
-Future<bool> _showDeleteDialog() async {
-  bool? result = await Get.defaultDialog<bool>(
-    backgroundColor: Colors.black26,
-    contentPadding: EdgeInsets.fromLTRB(20,20,20,20),
+  Future<bool> _showDeleteDialog() async {
+    bool? result = await Get.defaultDialog<bool>(
+      backgroundColor: Colors.black26,
+      contentPadding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+      title: "Delete Note",
+      titlePadding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+      titleStyle: TextStyle(color: Colors.white),
+      middleText: "Are you sure you want to delete this note?",
+      middleTextStyle: TextStyle(color: Colors.white),
+      textCancel: "Cancel",
+      textConfirm: "Delete",
+      confirmTextColor: Colors.white,
+      onCancel: () => Get.back(result: false),
+      onConfirm: () => Get.back(result: true),
+      barrierDismissible: false,
+    );
 
-    title: "Delete Note",
-    titlePadding: EdgeInsets.fromLTRB(20,20,20,0),
-    titleStyle: TextStyle(color: Colors.white),
-  
-    middleText: "Are you sure you want to delete this note?", 
-    middleTextStyle:  TextStyle(color: Colors.white),
-
-    textCancel: "Cancel",
-    textConfirm: "Delete",
-
-    confirmTextColor: Colors.white, 
-    onCancel: () => Get.back(result: false),
-    onConfirm: () => Get.back(result: true), 
-    barrierDismissible: false, 
-  );
-
-  return result ?? false; 
-}
+    return result ?? false;
+  }
 }
