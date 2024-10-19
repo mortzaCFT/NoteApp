@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:notepad/controllers/data_controller.dart';
+import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'dart:io';
 
 class AddNew extends StatelessWidget {
   AddNew({super.key, required this.controller});
 
-  final Rx<Color> selectedColor = Rx<Color>(Colors.blue);  
+  final Rx<Color> selectedColor = Rx<Color>(Colors.blue);
   final TextEditingController titleController = TextEditingController();
   final TextEditingController textController = TextEditingController();
 
   final DataController controller;
+
+  final RxBool isSignatureMode = false.obs;
+
+  final GlobalKey<SfSignaturePadState> _signatureKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -29,34 +38,105 @@ class AddNew extends StatelessWidget {
                 color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
-          TextField(
-            cursorColor: Colors.grey,
-            controller: titleController,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'Title',
-              hintStyle: TextStyle(color: Colors.grey),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  isSignatureMode.value = false;
+                },
+                child: Obx(() => Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: isSignatureMode.value
+                            ? Colors.grey.shade400
+                            : Colors.blueAccent,
+                        border: Border.all(
+                          color: !isSignatureMode.value
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Icon(
+                        Icons.text_fields,
+                        color: !isSignatureMode.value
+                            ? Colors.white
+                            : Colors.black54,
+                      ),
+                    )),
               ),
-            ),
-          ),
-          SizedBox(height: 10),
-          TextField(
-            cursorColor: Colors.grey,
-            controller: textController,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'Text',
-              hintStyle: TextStyle(color: Colors.grey),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey),
+              SizedBox(width: 20),
+              GestureDetector(
+                onTap: () {
+                  isSignatureMode.value = true;
+                },
+                child: Obx(() => Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: isSignatureMode.value
+                            ? Colors.greenAccent
+                            : Colors.grey.shade400,
+                        border: Border.all(
+                          color: isSignatureMode.value
+                              ? Colors.white
+                              : Colors.black54,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Icon(
+                        Icons.brush,
+                        color: isSignatureMode.value
+                            ? Colors.white
+                            : Colors.black54,
+                      ),
+                    )),
               ),
-            ),
-            maxLines: 3,
+            ],
           ),
+          SizedBox(height: 20),
+          Obx(() => !isSignatureMode.value
+              ? Column(
+                  children: [
+                    TextField(
+                      cursorColor: Colors.grey,
+                      controller: titleController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Title',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      cursorColor: Colors.grey,
+                      controller: textController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Text',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                      ),
+                      maxLines: 3,
+                    ),
+                  ],
+                )
+              : SfSignaturePad(
+                  key: _signatureKey,
+                  backgroundColor: Colors.grey[200],
+                  strokeColor: Colors.black,
+                )),
           SizedBox(height: 20),
           Text('Select Color :',
               style:
@@ -168,7 +248,7 @@ class AddNew extends StatelessWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: selectedColor.value, 
+                        color: selectedColor.value,
                         border: Border.all(
                           color: Colors.white,
                           width: 5,
@@ -182,10 +262,29 @@ class AddNew extends StatelessWidget {
           ),
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              String title = titleController.text;
-              String text = textController.text;
-              controller.add_Note(title, text, selectedColor.value);
+            onPressed: () async {
+              if (isSignatureMode.value) {
+                final image =
+                    await _signatureKey.currentState!.toImage(pixelRatio: 3.0);
+                final ByteData? bytes =
+                    await image.toByteData(format: ui.ImageByteFormat.png);
+                if (bytes != null) {
+                  final Uint8List signatureData = bytes.buffer.asUint8List();
+
+                  final directory = await getTemporaryDirectory();
+                  final String path =
+                      '${directory.path}/signature_${DateTime.now().millisecondsSinceEpoch}.png';
+
+                  final File file = File(path);
+                  await file.writeAsBytes(signatureData);
+
+                  controller.add_Note('', '', selectedColor.value, path);
+                }
+              } else {
+                String title = titleController.text;
+                String text = textController.text;
+                controller.add_Note(title, text, selectedColor.value, null);
+              }
               Get.back();
             },
             child: Text('Add Note'),
@@ -203,9 +302,9 @@ class AddNew extends StatelessWidget {
           title: const Text('Pick a color'),
           content: SingleChildScrollView(
             child: HueRingPicker(
-              pickerColor: selectedColor.value, 
+              pickerColor: selectedColor.value,
               onColorChanged: (Color color) {
-                selectedColor.value = color; 
+                selectedColor.value = color;
               },
               enableAlpha: false,
               displayThumbColor: true,
@@ -215,7 +314,7 @@ class AddNew extends StatelessWidget {
             ElevatedButton(
               child: const Text('Select'),
               onPressed: () {
-                Get.back(); 
+                Get.back();
               },
             ),
           ],
@@ -224,3 +323,6 @@ class AddNew extends StatelessWidget {
     );
   }
 }
+
+
+/* Yeah ,...that was too long...*/
